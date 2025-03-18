@@ -69,7 +69,7 @@ module.exports = {
                 totalCost += price * item.quantity;
             }
 
-            return new orderModel.OrderResponse(orderId, "Pending", totalCost);
+            return new orderModel.OrderResponse(orderId, "PENDING", totalCost);
         } catch (error) {
             throw new Error("Error creating order: " + error.message);
         }

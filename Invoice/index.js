@@ -1,13 +1,27 @@
-module.exports = async function (context, req) {
-    context.log('JavaScript HTTP trigger function processed a request.');
+const orderDAO = require("../common/dao/invoiceDAO");
+const createHandler = require("azure-function-express").createHandler;
+const express = require("express");
+const app = express();
 
-    const name = (req.query.name || (req.body && req.body.name));
-    const responseMessage = name
-        ? "Hello, " + name + ". This HTTP triggered function executed successfully."
-        : "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.";
+app.post("/api/invoice", async (req, res) => {
+    req.context.log("Creating Invoice");
+    try {
+        const { orderId } = req.body;
 
-    context.res = {
-        // status: 200, /* Defaults to 200 */
-        body: responseMessage
-    };
-}
+        if (!orderId) {
+            return res.status(400).json({ message: "Missing Order Id" });
+        }
+
+        const params = {
+            ORDER_ID: orderId
+        };
+
+        const orderResponse = await orderDAO.createInvoice(params);
+        res.status(201).json(orderResponse);
+    } catch (error) {
+        req.context.log("Error creating order", error);
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+});
+
+module.exports = createHandler(app);
