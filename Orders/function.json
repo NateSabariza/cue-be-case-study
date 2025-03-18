@@ -9,7 +9,7 @@
         "get",
         "post"
       ],
-      "route": "user" 
+      "route":"orders"
     },
     {
       "type": "http",

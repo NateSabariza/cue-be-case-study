@@ -3,9 +3,7 @@ const createHandler = require("azure-function-express").createHandler;
 const express = require("express");
 const app = express();
 
-// app.use(express.json());
-
-app.get("/api/users", 
+app.get("/api/user", 
     async(req, res) => {
         req.context.log('Getting All Users');
         try {
@@ -19,7 +17,7 @@ app.get("/api/users",
     }
 );
 
-app.post("/api/users", async (req, res) => {
+app.post("/api/user", async (req, res) => {
     console.log("Received request to create a user");
 
     const { FIRSTNAME, LASTNAME, EMAIL } = req.body;

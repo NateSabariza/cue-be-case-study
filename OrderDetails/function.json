@@ -6,10 +6,9 @@
       "direction": "in",
       "name": "req",
       "methods": [
-        "get",
-        "post"
+        "get"
       ],
-      "route": "user" 
+      "route": "order/{orderId}"
     },
     {
       "type": "http",
