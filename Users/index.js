@@ -3,7 +3,7 @@ const createHandler = require("azure-function-express").createHandler;
 const express = require("express");
 const app = express();
 
-app.use(express.json());
+// app.use(express.json());
 
 app.get("/api/users", 
     async(req, res) => {
@@ -18,5 +18,26 @@ app.get("/api/users",
         }
     }
 );
+
+app.post("/api/addUser", async (req, res) => {
+    console.log("Received request to create a user");
+
+    const { FIRSTNAME, LASTNAME, EMAIL } = req.body;
+    if (!FIRSTNAME || !LASTNAME || !EMAIL) {
+        console.log("Validation failed: Missing fields");
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+        console.log("Calling userDAO.createUser...");
+        const userId = await userDAO.createUser({ FIRSTNAME, LASTNAME, EMAIL });
+        console.log("User created with ID:", userId);
+        
+        res.status(201).json({ USER_ID: userId });
+    } catch (error) {
+        console.error("Error creating user:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 
 module.exports = createHandler(app);

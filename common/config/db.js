@@ -22,14 +22,20 @@ const connectionPool = new sql.ConnectionPool(config)
     });
 
 async function executeQuery(query, params = []) {
-    const pool = await connectionPool;
-    const request = pool.request();
-    params.forEach(({name, type, value}) => {
-        request.input(name, type, value);
-    });
+    try {
+        const pool = await connectionPool;
+        const request = pool.request();
+        
+        params.forEach(({ name, type, value }) => {
+            request.input(name, type, value);
+        });
 
-    const result = await request.query(query);
-    return result.recordset;
+        const result = await request.query(query);
+        return result.recordset;
+    } catch (error) {
+        console.error("Database Query Error:", error); // Logs the error
+        throw new Error("Database Error: " + error.message);
+    }
 }
 
 module.exports = { executeQuery, sql };
