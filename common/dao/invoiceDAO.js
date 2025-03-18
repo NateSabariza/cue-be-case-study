@@ -96,12 +96,7 @@ module.exports = {
             console.log('Updating Order Status...');
             await executeQuery(updateOrderStatusQuery, updateOrderStatusParams);
             
-            return {
-                invoiceId: newInvoiceId,
-                status: "BILLED",
-                totalCost: totalCost.toFixed(2),
-                dueDate: dueDate.toISOString().split('T')[0]
-            };
+            return new orderModel.Invoice(newInvoiceId, "BILLED", totalCost.toFixed(2),dueDate.toISOString().split('T')[0]);
         } catch (error) {
             throw new Error("Error creating invoice: " + error.message);
         }
