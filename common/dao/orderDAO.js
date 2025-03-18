@@ -3,7 +3,7 @@ const orderModel = require("../model/order")
 
 module.exports = {
     async createOrder(order) {
-        // Step 1: Generate PO Number (Auto-Increment)
+        // Generate PO Number (Auto-Increment)
         const poQuery = `SELECT TOP 1 PO_NUMBER FROM dbo.[ORDER] ORDER BY ORDER_ID DESC`;
         const lastPoResult = await executeQuery(poQuery);
 
@@ -69,10 +69,46 @@ module.exports = {
                 totalCost += price * item.quantity;
             }
 
-            return orderModel.formatOrderResponse(orderId, "Pending", totalCost);
+            return new orderModel.OrderResponse(orderId, "Pending", totalCost);
         } catch (error) {
             throw new Error("Error creating order: " + error.message);
         }
+    },
+
+    async getOrders({ status, startDate, endDate, customerId }) {
+        let query = `
+            SELECT 
+                O.ORDER_ID AS orderId, 
+                O.ORDER_STATUS AS status, 
+                O.CUSTOMER_ID AS customerId, 
+                O.DATE_CREATED AS createdDate,
+                SUM(OD.PRICE * OD.QUANTITY) AS totalCost
+            FROM dbo.[ORDER] O
+            LEFT JOIN dbo.[ORDER_DETAILS] OD ON O.ORDER_ID = OD.ORDER_ID
+            WHERE 1=1
+        `;
+        let params = [];
+
+        if (status) {
+            query += " AND O.ORDER_STATUS = @status";
+            params.push({ name: "status", type: sql.VarChar, value: status });
+        }
+        if (startDate) {
+            query += " AND O.DATE_CREATED >= @startDate";
+            params.push({ name: "startDate", type: sql.DateTime, value: new Date(startDate) });
+        }
+        if (endDate) {
+            query += " AND O.DATE_CREATED <= @endDate";
+            params.push({ name: "endDate", type: sql.DateTime, value: new Date(endDate) });
+        }
+        if (customerId) {
+            query += " AND O.CUSTOMER_ID = @customerId";
+            params.push({ name: "customerId", type: sql.Int, value: customerId });
+        }
+
+        query += " GROUP BY O.ORDER_ID, O.ORDER_STATUS, O.CUSTOMER_ID, O.DATE_CREATED";
+
+        return await executeQuery(query, params);
     },
 
     async getOrderDetailsById(orderId) {
