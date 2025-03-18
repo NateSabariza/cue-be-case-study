@@ -19,7 +19,7 @@ app.get("/api/users",
     }
 );
 
-app.post("/api/addUser", async (req, res) => {
+app.post("/api/users", async (req, res) => {
     console.log("Received request to create a user");
 
     const { FIRSTNAME, LASTNAME, EMAIL } = req.body;
