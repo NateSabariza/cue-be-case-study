@@ -21,11 +21,12 @@ module.exports = {
             
             const status = orderResult[0].ORDER_STATUS;
             
+            //Checks if the retrieved order's status is 'FULFILLED'
             if (status.toUpperCase() !== 'FULFILLED') {
                 return { message: "Order is not yet fulfilled." };
             }
             
-            // Generate new INVOICE_ID manually
+            // Generate new INVOICE_ID
             const invoiceQuery = `SELECT TOP 1 INVOICE_ID FROM dbo.[INVOICE] ORDER BY INVOICE_ID DESC`;
             const lastInvoiceResult = await executeQuery(invoiceQuery);
 

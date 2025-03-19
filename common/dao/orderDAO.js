@@ -35,7 +35,7 @@ module.exports = {
 
             let totalCost = 0;
 
-            // Insert order details
+            // Insert Order Details
             const orderDetailQuery = `
                 INSERT INTO dbo.ORDER_DETAILS (ORDER_ID, PRODUCT_ID, QUANTITY, PRICE)
                 VALUES (@ORDER_ID, @PRODUCT_ID, @QUANTITY, @PRICE)
@@ -75,6 +75,7 @@ module.exports = {
         }
     },
 
+    //Getting all Orders w/ Filters.
     async getOrders({ status, startDate, endDate, customerId }) {
         let query = `
             SELECT 
@@ -111,6 +112,7 @@ module.exports = {
         return await executeQuery(query, params);
     },
 
+    //Fetching for a single Order Details
     async getOrderDetailsById(orderId) {
         try {
             const orderQuery = `
